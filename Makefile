@@ -17,13 +17,13 @@ CFLAGS  += -g
 endif
 
 ifeq ($(SSL_ENABLE),y)
-CFLAGS += -DHAVE_SSL
+CFLAGS += -DHAVE_SSL $(shell pkg-config --cflags wolfssl) -DNO_TLS -UNO_OLD_TLS
 WOLFSSL_ARCHIVE := v3.12.2-stable.tar.gz
 WOLFSSL_URL := https://github.com/wolfSSL/wolfssl/archive/$(WOLFSSL_ARCHIVE)
 WOLFSSL_DIR := wolfssl
 WOLFSSL_LIB := $(USR_DIR)/lib/libwolfssl.a
 CFLAGS += -I$(USR_DIR)/include
-LIBS += -Wl,-Bstatic -lwolfssl -Wl,-Bdynamic
+LIBS += $(shell pkg-config --libs wolfssl)
 endif
 
 SRC := $(wildcard src/*.c)
@@ -39,7 +39,7 @@ LIBJSON_LIB = json/libjson.a
 
 all: deps $(BIN)
 
-deps: $(WOLFSSL_LIB) $(LIBAE_LIB) $(LIBJSON_LIB) 
+deps: $(LIBAE_LIB) $(LIBJSON_LIB) 
 
 $(DEP_DIR)/$(WOLFSSL_ARCHIVE):
 	curl --create-dirs -Ls $(WOLFSSL_URL) -o "$(DEP_DIR)/$(WOLFSSL_ARCHIVE)"
