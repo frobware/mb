@@ -10,6 +10,7 @@
 #include <sys/ioctl.h>		/* ioctl, FIONREAD */
 #include <sys/socket.h>		/* send/recv(), MSG_NOSIGNAL */
 #include <unistd.h>		/* read(), close() */
+#include <arpa/inet.h>		/* inet_pton() */
 
 #include "mb.h"
 #include "merr.h"
