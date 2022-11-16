@@ -19,7 +19,8 @@ endif
 ifeq ($(SSL_ENABLE),y)
 CFLAGS += -DHAVE_SSL -I$(USR_DIR)/include
 LIBS += -Wl,-Bstatic -lwolfssl -Wl,-Bdynamic
-WOLFSSL_ARCHIVE := v4.7.0-stable.tar.gz
+WOLFSSL_ARCHIVE := v5.5.3-stable.tar.gz
+# WOLFSSL_ARCHIVE := v4.7.0-stable.tar.gz
 WOLFSSL_URL := https://github.com/wolfSSL/wolfssl/archive/$(WOLFSSL_ARCHIVE)
 WOLFSSL_DIR := wolfssl
 WOLFSSL_LIB := $(USR_DIR)/lib/libwolfssl.a
