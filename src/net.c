@@ -11,6 +11,8 @@
 #include <sys/socket.h>		/* send/recv(), MSG_NOSIGNAL */
 #include <unistd.h>		/* read(), close() */
 
+#include "../libae/anet.h"
+
 #include "mb.h"
 #include "merr.h"
 #include "net.h"
@@ -668,7 +670,9 @@ void socket_read(aeEventLoop *loop, int fd, void *data, int flags) {
        * This doesn't need to be client initiated, e.g. server-side disconnect to keep
        * the number of non-active TCP open connections low.
        */
-      error("host sent an empty reply [%d] (%s:%d): %s: (%d) reconnecting...\n", c->fd, c->host, c->port, strerror(errno), errno);
+      char buf[1024] = { '?', ':', '?', '\0' };
+      anetFormatSock(c->fd, buf, sizeof(buf));
+      error("host sent an empty reply [%d] %s => (%s:%d): %s: (%d) reconnecting...\n", c->fd, buf, c->host, c->port, strerror(errno), errno);
       goto err_conn;
     }
 
