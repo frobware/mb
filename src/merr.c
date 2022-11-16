@@ -1,4 +1,6 @@
 #include "merr.h"
+#include <math.h>
+#include <string.h>
 
 pthread_mutex_t stderr_lock = PTHREAD_MUTEX_INITIALIZER;
 static void (*die_cb)() = NULL;
@@ -39,14 +41,35 @@ void die(int err, const char *fmt, ...) {
   exit(err);
 }
 
+static void current_time(char *s, size_t sz, const char *strftime_fmt,
+                         int *milliseconds) {
+  struct tm *tm_info;
+  struct timeval tv;
+
+  gettimeofday(&tv, NULL);
+  *milliseconds = lrint(tv.tv_usec / 1000.0);
+
+  if (*milliseconds >= 1000) {
+    *milliseconds -= 1000;
+    tv.tv_sec++;
+  }
+
+  tm_info = localtime(&tv.tv_sec);
+  strftime(s, sz, strftime_fmt, tm_info);
+}
+
 void error(const char *fmt, ...) {
+  char time_buffer[1024];
+  int milliseconds;
   va_list ap;
 
   if (suppress >= s_error) return;
 
   va_start(ap, fmt);
 
+  current_time(time_buffer, sizeof(time_buffer) - 1, "%d/%b/%Y:%H:%M:%S", &milliseconds);
   pthread_mutex_lock(&stderr_lock);
+  fprintf(stderr, "[%s.%.03d] ", time_buffer, milliseconds);
   fputs("error: ", stderr);
   vfprintf(stderr, fmt, ap);
   pthread_mutex_unlock(&stderr_lock);
